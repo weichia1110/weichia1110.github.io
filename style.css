@@ -1,0 +1,177 @@
+/* =====================================================
+   THEME COLORS｜主題色與玻璃效果
+   想換整站顏色、透明度、模糊程度 → 只改這個 :root 區塊
+   ===================================================== */
+:root{
+  --glass-primary:   rgba(255,255,255,.10);  /* Primary：Header、音樂播放器 */
+  --glass-secondary: rgba(255,255,255,.07);  /* Secondary：一般內容區塊 */
+  --glass-subtle:    rgba(255,255,255,.04);  /* Subtle：卡片內的小元件 */
+  --glass-border:    rgba(255,255,255,.16);  /* 玻璃細邊框 */
+  --glass-hi:        rgba(255,255,255,.28);  /* 頂部高光線，製造厚度 */
+  --text-primary:    #f4f6ff;
+  --text-secondary:  rgba(228,233,255,.68);
+  --accent:          #7aa2ff;                /* 主強調色 */
+  --accent-2:        #c084fc;                /* 漸層第二色 */
+  --online:#4ade80; --away:#facc15; --busy:#f87171; --offline:#94a3b8;
+  --blur: 22px;                              /* 毛玻璃模糊強度 */
+  --radius: 22px;
+  --shadow: 0 18px 50px rgba(0,0,0,.35);
+  --font: "Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--text-primary);background:#0b1020;min-height:100vh;overflow-x:hidden;line-height:1.55}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* =====================================================
+   BACKGROUND｜網站背景圖片
+   在這裡修改網站背景圖片。
+   例如：url("../assets/background/background.png")
+   支援：PNG / JPG / WEBP / GIF（GIF 會保留動畫）
+   ===================================================== */
+.bg{
+  position:fixed;inset:0;z-index:-2;
+  background:url("../assets/background/background.svg") center/cover no-repeat;
+}
+.bg-shade{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 20% 0%,rgba(122,162,255,.18),transparent 55%),radial-gradient(ellipse at 90% 100%,rgba(192,132,252,.18),transparent 55%),rgba(5,8,20,.35)}
+
+/* ===== 玻璃三層級 ===== */
+.glass-1,.glass-2,.glass-3{
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(140%);
+  backdrop-filter:blur(var(--blur)) saturate(140%);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--shadow), inset 0 1px 0 var(--glass-hi);
+  border-radius:var(--radius);
+}
+.glass-1{background:linear-gradient(145deg,var(--glass-primary),rgba(255,255,255,.04))}
+.glass-2{background:linear-gradient(145deg,var(--glass-secondary),rgba(255,255,255,.03))}
+.glass-3{background:var(--glass-subtle);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+
+.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 120px;display:grid;gap:18px}
+
+/* ===== PROFILE HEADER ===== */
+.header{overflow:hidden;animation:enter .6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.banner{height:230px;position:relative}
+/* PROFILE BANNER｜在 js/script.js 的 profile.banner 修改檔名 */
+.banner-img{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.banner::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,12,28,0) 30%,rgba(8,12,28,.75))}
+.header-body{display:grid;grid-template-columns:auto 1fr auto;gap:22px;padding:0 28px 26px;margin-top:-62px;position:relative;z-index:1;align-items:end}
+.avatar-frame{position:relative;width:148px;height:148px;border-radius:30px;padding:5px;background:var(--glass-primary);border:1px solid var(--glass-hi);box-shadow:0 14px 34px rgba(0,0,0,.45);transition:transform .25s ease,box-shadow .25s ease}
+.avatar-frame:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 20px 44px rgba(0,0,0,.5),0 0 0 4px rgba(122,162,255,.25)}
+.avatar-frame img{width:100%;height:100%;object-fit:cover;border-radius:25px}
+.dot{position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:50%;border:4px solid #14192e;background:var(--offline)}
+.ident{min-width:0}
+h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;letter-spacing:-.02em;overflow-wrap:anywhere}
+.username{color:var(--text-secondary);margin-top:4px}
+.status{margin-top:8px;font-weight:600;display:flex;align-items:center;gap:8px}
+.status i{width:10px;height:10px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+.desc{margin-top:8px;color:var(--text-secondary);max-width:56ch}
+.meta{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.meta li{font-size:.85rem;padding:4px 12px;border-radius:99px;background:var(--glass-subtle);border:1px solid var(--glass-border)}
+.level{padding:14px 18px;min-width:210px}
+.level-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.level-label{font-size:.75rem;letter-spacing:.14em;color:var(--text-secondary)}
+.level-num{font-size:2.4rem;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.xp-text{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-secondary);margin:8px 0 6px}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.35)}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 0 14px rgba(122,162,255,.6);transition:width 1s cubic-bezier(.2,.7,.2,1) .3s}
+
+/* ===== NAVIGATION ===== */
+.nav{display:flex;gap:6px;padding:7px;border-radius:99px;overflow-x:auto;scrollbar-width:none;position:sticky;top:10px;z-index:5}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex:1;min-width:max-content;padding:10px 20px;border-radius:99px;color:var(--text-secondary);font-weight:600;transition:background .25s,color .25s,transform .2s}
+.nav button:hover{color:var(--text-primary);background:var(--glass-subtle);transform:translateY(-1px)}
+.nav button.active{color:#fff;background:linear-gradient(135deg,rgba(122,162,255,.5),rgba(192,132,252,.45));box-shadow:0 6px 18px rgba(122,162,255,.25),inset 0 1px 0 var(--glass-hi)}
+
+/* ===== PANELS & CARDS ===== */
+.panel{display:none;gap:18px}
+.panel.active{display:grid;animation:enter .35s ease both}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px}
+.col{display:grid;gap:18px;align-content:start;min-width:0}
+.card{padding:22px}
+h2{font-size:.85rem;letter-spacing:.16em;color:var(--text-secondary);margin-bottom:16px}
+.about p{margin-bottom:10px;max-width:68ch}
+
+/* Activity */
+.timeline{display:grid;gap:10px;position:relative}
+.act{display:flex;gap:14px;align-items:center;padding:10px 12px;border-radius:16px;background:var(--glass-subtle);border:1px solid transparent;transition:border-color .2s,transform .2s}
+.act:hover{border-color:var(--glass-border);transform:translateX(3px)}
+.act img{width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none}
+.act b{display:block}.act small{color:var(--text-secondary)}
+
+/* Recently played */
+.recent{display:grid;gap:12px}
+.rgame{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:10px;border-radius:16px;background:var(--glass-subtle);align-items:center;transition:background .2s,transform .2s}
+.rgame:hover{background:var(--glass-secondary);transform:translateY(-2px)}
+.rgame img{width:150px;aspect-ratio:460/215;object-fit:cover;border-radius:10px}
+.rgame b{display:block}.rgame small{color:var(--text-secondary);display:block}
+.mini{height:6px;border-radius:9px;background:rgba(255,255,255,.12);margin-top:8px;overflow:hidden}.mini i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+
+/* Favorite games */
+.fav{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.fgame{border-radius:18px;overflow:hidden;background:var(--glass-subtle);border:1px solid var(--glass-border);transition:transform .3s ease,box-shadow .3s ease}
+.fgame:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.fgame .pic{overflow:hidden}
+.fgame img{width:100%;aspect-ratio:460/215;object-fit:cover;transition:transform .5s ease}
+.fgame:hover img{transform:scale(1.06)}
+.fgame div.t{padding:12px 14px}.fgame small{color:var(--text-secondary)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{padding:22px 14px;text-align:center;border-radius:18px}
+.stat b{display:block;font-size:2.4rem;line-height:1.1;letter-spacing:-.02em}
+.stat small{font-size:.75rem;letter-spacing:.12em;color:var(--text-secondary)}
+
+/* Badges */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.badges-mini{display:grid;gap:12px}
+.badge{display:flex;gap:14px;align-items:center;padding:14px;border-radius:18px;transition:transform .25s}
+.badge:hover{transform:translateY(-3px)}
+.badge img{width:56px;height:56px;border-radius:14px;flex:none}
+.badge b{display:block}.badge span{font-size:.8rem;color:var(--accent)}.badge small{display:block;color:var(--text-secondary);font-size:.82rem}
+
+/* Showcase */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.shot{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:16/10;border:1px solid var(--glass-border)}
+.shot img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
+.shot:hover img{transform:scale(1.07)}
+.shot span{position:absolute;inset:auto 0 0 0;padding:26px 14px 12px;font-weight:600;background:linear-gradient(transparent,rgba(8,12,28,.78));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transform:translateY(8px);transition:.3s}
+.shot:hover span{opacity:1;transform:none}
+
+/* Socials */
+.socials{display:grid;gap:10px}.socials.wide{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.social{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;text-decoration:none;color:inherit;transition:transform .25s,background .25s}
+.social:hover{transform:translateY(-3px);background:var(--glass-primary)}
+.social .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;background:linear-gradient(135deg,rgba(122,162,255,.4),rgba(192,132,252,.4));flex:none}
+.social b{display:block}.social small{display:block;color:var(--text-secondary);font-size:.8rem}
+
+/* Music player */
+.player{position:fixed;right:16px;bottom:16px;z-index:10;display:flex;align-items:center;gap:12px;padding:10px 16px 10px 10px;border-radius:99px;max-width:calc(100vw - 32px)}
+#playBtn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));flex:none;transition:transform .2s}
+#playBtn:hover{transform:scale(1.08)}
+.track{display:grid;min-width:0}.track b{font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track small{color:var(--text-secondary);font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vol{width:80px;accent-color:var(--accent)}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:900px){
+  .grid-2{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .header-body{grid-template-columns:auto 1fr}
+  .level{grid-column:1/-1}
+}
+@media (max-width:600px){
+  .wrap{padding:14px 12px 110px}
+  .banner{height:150px}
+  .header-body{grid-template-columns:1fr;padding:0 18px 20px;margin-top:-52px;justify-items:start}
+  .avatar-frame{width:112px;height:112px;border-radius:26px}
+  .level{width:100%}
+  .rgame{grid-template-columns:104px 1fr}.rgame img{width:104px}
+  .card{padding:16px}
+  .stat b{font-size:1.9rem}
+  #vol{width:60px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

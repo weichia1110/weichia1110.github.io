@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weichia — Player Profile</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="bg-shade" aria-hidden="true"></div>
+
+<main class="wrap">
+  <!-- ===== PROFILE HEADER（內容由 js/script.js 的 profile 填入）===== -->
+  <header class="glass-1 header">
+    <div class="banner"><div class="banner-img" id="banner"></div></div>
+    <div class="header-body">
+      <div class="avatar-frame"><img id="avatar" alt="Avatar"><span class="dot" id="avatarDot"></span></div>
+      <div class="ident">
+        <h1 id="displayName"></h1>
+        <p class="username" id="username"></p>
+        <p class="status" id="status"></p>
+        <p class="desc" id="shortDesc"></p>
+        <ul class="meta">
+          <li id="location"></li>
+          <li id="memberSince"></li>
+        </ul>
+      </div>
+      <div class="level glass-3">
+        <div class="level-top"><span class="level-label">LEVEL</span><span class="level-num" id="level"></span></div>
+        <div class="xp-text"><span>XP</span><span id="xpText"></span></div>
+        <div class="bar"><i id="xpBar"></i></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== PROFILE NAVIGATION ===== -->
+  <nav class="nav glass-2" id="nav" aria-label="Profile navigation">
+    <button data-tab="profile" class="active">Profile</button>
+    <button data-tab="games">Games</button>
+    <button data-tab="stats">Stats</button>
+    <button data-tab="activity">Activity</button>
+    <button data-tab="showcase">Showcase</button>
+  </nav>
+
+  <!-- Profile -->
+  <section class="panel active" id="tab-profile">
+    <div class="grid-2">
+      <div class="col">
+        <article class="glass-2 card"><h2>ABOUT ME</h2><div id="about" class="about"></div></article>
+        <article class="glass-2 card"><h2>RECENT ACTIVITY</h2><div class="timeline" data-render="activity" data-limit="3"></div></article>
+        <article class="glass-2 card"><h2>RECENTLY PLAYED</h2><div class="recent" data-render="recent"></div></article>
+      </div>
+      <aside class="col">
+        <article class="glass-2 card"><h2>BADGES</h2><div class="badges-mini" data-render="badges" data-limit="2"></div></article>
+        <article class="glass-2 card"><h2>SOCIALS</h2><div class="socials" data-render="socials"></div></article>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Games -->
+  <section class="panel" id="tab-games">
+    <article class="glass-2 card"><h2>RECENTLY PLAYED</h2><div class="recent" data-render="recent"></div></article>
+    <article class="glass-2 card"><h2>FAVORITE GAMES</h2><div class="fav" data-render="favorites"></div></article>
+  </section>
+
+  <!-- Stats -->
+  <section class="panel" id="tab-stats">
+    <article class="glass-2 card"><h2>GAME STATS</h2><div class="stats" data-render="stats"></div></article>
+    <article class="glass-2 card"><h2>BADGES</h2><div class="badges" data-render="badges"></div></article>
+  </section>
+
+  <!-- Activity -->
+  <section class="panel" id="tab-activity">
+    <article class="glass-2 card"><h2>RECENT ACTIVITY</h2><div class="timeline" data-render="activity"></div></article>
+  </section>
+
+  <!-- Showcase -->
+  <section class="panel" id="tab-showcase">
+    <article class="glass-2 card"><h2>SHOWCASE</h2><div class="gallery" data-render="showcase"></div></article>
+    <article class="glass-2 card"><h2>SOCIALS</h2><div class="socials wide" data-render="socials"></div></article>
+  </section>
+</main>
+
+<!-- ===== MUSIC PLAYER ===== -->
+<div class="player glass-1" id="player">
+  <button id="playBtn" aria-label="Play / Pause">▶</button>
+  <div class="track"><b id="trackName"></b><small id="trackArtist"></small></div>
+  <input id="vol" type="range" min="0" max="100" value="40" aria-label="Volume">
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
