@@ -1,150 +1,336 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Profile</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap">
-  <link rel="stylesheet" href="style.css">
-  <noscript>
-    <style>
-      .enter { display: none; }
-      .page { opacity: 1 !important; visibility: visible !important; }
-    </style>
-  </noscript>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ① 瀏覽器分頁標題 -->
+<title>我的個人檔案</title>
+<!-- 分頁小圖示（可選）：把 assets/avatar.jpg 換成你的圖片 -->
+<link rel="icon" href="assets/avatar.jpg">
+<style>
+  /* ============ 全站顏色設定：想換主題色只要改這裡 ============ */
+  :root {
+    --accent: #57cbde;                    /* Steam 的淡青色（「Online」、連結 hover） */
+    --gold: #e5b400;                      /* 時鐘圓框顏色（原本等級圓圈的金色） */
+    --text: #dcdedf;
+    --muted: #8f98a0;
+    --glass: rgba(2, 14, 30, .42);        /* 毛玻璃底色；最後一個數字是透明度 0~1 */
+    --glass-dark: rgba(0, 0, 0, .35);     /* 內層較深的區塊 */
+    --blur: 12px;                         /* 模糊程度 */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; color: var(--text);
+    font-family: "Motiva Sans", Arial, "Microsoft JhengHei", "PingFang TC", Helvetica, sans-serif; font-size: 12px; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ② 背景圖：放在 assets/background.jpg（檔名不同請改這裡）。
+        找不到圖片時會顯示深色漸層 */
+  body {
+    background: #01060d url("assets/background.jpg") center top / cover fixed no-repeat;
+    min-height: 100vh;
+  }
+  /* 邊緣暗角（Steam 個人檔案的特色）；數字越大，邊緣越黑 */
+  body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,.65) 100%); }
+
+  /* ③ 自訂鼠標：assets/cursor.png（建議 32×32，最大 128×128）。
+        後面的「0 0」是點擊熱點座標（圖片上哪一點代表鼠標位置）。
+        滑過連結／按鈕的鼠標用 assets/cursor-pointer.png（可選） */
+  body { cursor: url("assets/cursor.png") 0 0, auto; }
+  a, button, .progress { cursor: url("assets/cursor-pointer.png") 0 0, pointer; }
+
+  .page { width: 940px; max-width: 100%; margin: 0 auto; padding: 64px 0 60px; position: relative; z-index: 1; }
+
+  /* ============ 毛玻璃卡片 ============ */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(var(--blur)) saturate(130%);
+    -webkit-backdrop-filter: blur(var(--blur)) saturate(130%);
+    box-shadow: 0 6px 28px rgba(0,0,0,.4);
+    transition: transform .18s ease-out;
+    will-change: transform;
+  }
+  .glass.leaving { transition: transform .5s ease-out; }
+
+  /* ============ 頂部（頭像／名稱／時鐘）============ */
+  .header { display: grid; grid-template-columns: 124px 1fr 268px; gap: 0 14px; margin-bottom: 26px; }
+
+  /* Steam 頭像外框 */
+  .avatar { width: 124px; height: 124px; padding: 4px; background: rgba(40,110,150,.35);
+    border: 1px solid rgba(87,203,222,.55); box-shadow: 0 0 18px rgba(87,203,222,.25); }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; background: #07121c; }
+
+  .name { font-size: 17px; color: #fff; padding-top: 2px; }
+  .name::after { content: ""; display: inline-block; margin: 0 0 3px 7px; border: 4px solid transparent;
+    border-top-color: #9aa5ad; border-bottom: 0; }
+  /* ④ 個人簽名行：每行一個 <div class="line">，粗體是標題，灰色小字是補充 */
+  .lines { margin-top: 10px; line-height: 1.55; font-size: 11px; }
+  .lines b { color: #fff; }
+  .lines small { color: var(--muted); font-size: 10px; margin-left: 5px; }
+  .lines a:hover { color: var(--accent); }
+
+  /* 右上角：GMT+8 時鐘（取代原本的「等級」）*/
+  .level-row { display: flex; align-items: center; gap: 8px; font-size: 16px; color: #fff; padding-top: 2px; }
+  .clock-pill { border: 2px solid var(--gold); border-radius: 14px; padding: 0 9px; height: 25px; line-height: 21px;
+    font-size: 14px; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: .5px; }
+  .level-box { margin-top: 10px; display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+    background: var(--glass-dark); }
+  .level-box .ico { width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3);
+    display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--muted); flex: none; }
+  .level-box b { display: block; font-size: 10px; color: #fff; }
+  .level-box span { font-size: 10px; color: #b8bcbf; }
+  /* ⑤ 按鈕文字與連結：把 # 換成你的網址 */
+  .btn { display: inline-block; margin-top: 10px; padding: 3px 8px; font-size: 11px; background: var(--glass-dark); color: #dfe3e6; }
+  .btn:hover { background: rgba(87,203,222,.25); color: #fff; }
+
+  /* ============ 主體兩欄 ============ */
+  .main { display: grid; grid-template-columns: 1fr 268px; gap: 14px; align-items: start; }
+  .left { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ⑥ 左側展示圖：assets/showcase.jpg */
+  .showcase { padding: 6px; }
+  .showcase .frame { border: 1px solid #000; background: #000; aspect-ratio: 1 / 1; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; }
+  .showcase img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* 「最愛的指南」→ 音樂區塊 */
+  .guide { padding: 12px 6px 6px; }
+  .guide h2 { font-size: 12px; font-weight: 400; color: #fff; padding: 0 6px 12px; }
+  .guide-card { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 14px; background: var(--glass-dark); }
+  .case { width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.3); }
+  .cd { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; position: relative;
+    background: conic-gradient(from 20deg, #101c24, #5a7f90, #101c24, #3c5a68, #101c24);
+    animation: spin 6s linear infinite; animation-play-state: paused; }
+  .cd img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cd::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; left: 50%; top: 50%;
+    transform: translate(-50%,-50%); background: #08121a; border: 2px solid rgba(255,255,255,.35); }
+  .guide-card.playing .cd { animation-play-state: running; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .song-title { font-size: 19px; font-weight: 700; color: #fff; font-family: Georgia, "Noto Serif TC", serif; }
+  .song-artist { font-size: 11px; color: #9aa5ad; margin: 4px 0 8px; }
+  .song-artist b { color: #fff; }
+  .stars { font-size: 11px; color: #a4d007; letter-spacing: 1px; margin-bottom: 10px; }  /* Steam 的綠色星星 */
+  .stars span { color: var(--muted); letter-spacing: 0; margin-left: 4px; }
+  .progress-row { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--muted);
+    font-variant-numeric: tabular-nums; }
+  .progress { flex: 1; height: 5px; background: rgba(255,255,255,.14); }
+  .bar { height: 100%; width: 0; background: var(--accent); }
+  .controls { display: flex; gap: 6px; margin-top: 12px; }
+  .controls button { background: var(--glass-dark); border: 1px solid rgba(255,255,255,.18); color: var(--text);
+    width: 36px; height: 26px; font-size: 11px; }
+  .controls button:hover, .controls button:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+
+  /* ============ 右側欄（單一長欄，和 Steam 一樣）============ */
+  .side { padding: 14px 16px 18px; }
+  .online { font-size: 15px; color: var(--accent); margin-bottom: 22px; }
+  .sec { margin-bottom: 22px; }
+  /* 區塊標題：小粗體字 + 右邊的灰色大數字（和 Steam 的「Games 23」一樣）*/
+  .sec h3 { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 9px; }
+  .sec h3 span { font-size: 16px; font-weight: 300; color: var(--muted); margin-left: 5px; }
+  .sec p, .sec li { font-size: 12px; line-height: 1.7; color: #c6d4df; }
+  .sec ul { list-style: none; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badges i, .badges img { width: 44px; height: 44px; border-radius: 6px; background: rgba(255,255,255,.1); object-fit: cover; display: block; }
+
+  /* 好友／連結列：圓圈數字（對應 Steam 好友旁的等級圈）*/
+  .friend { display: flex; align-items: center; gap: 9px; padding: 3px 0 3px 3px; margin: 0 -4px; }
+  .friend:hover { background: rgba(255,255,255,.07); }
+  .friend .pic { width: 32px; height: 32px; background: rgba(255,255,255,.12); object-fit: cover; flex: none; border: 1px solid rgba(87,203,222,.5); }
+  .friend .t { flex: 1; min-width: 0; }
+  .friend b { display: block; font-weight: 400; font-size: 11px; color: var(--accent); }
+  .friend small { display: block; font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .friend .lv { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #7ad24b; font-size: 10px; color: #fff;
+    display: flex; align-items: center; justify-content: center; flex: none; }
+
+  @media (max-width: 960px) { .page { padding: 40px 14px; } }
+  @media (max-width: 780px) {
+    .header { grid-template-columns: 96px 1fr; }
+    .avatar { width: 96px; height: 96px; }
+    .header .right { grid-column: 1 / -1; margin-top: 12px; }
+    .main { grid-template-columns: 1fr; }
+    .guide-card { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .cd { animation: none; } }
+</style>
 </head>
-<body class="locked">
+<body>
+<div class="page">
 
-  <div class="bg-layer" aria-hidden="true"></div>
-  <div id="snow-layer" aria-hidden="true"></div>
-  <div id="rain-layer" aria-hidden="true"></div>
-  <div id="crt-layer" aria-hidden="true"></div>
+  <!-- ================= 頂部 ================= -->
+  <header class="header glass" data-depth="5" data-tilt="2" style="padding:14px">
+    <!-- ⑦ 頭像：assets/avatar.jpg -->
+    <div class="avatar"><img src="assets/avatar.jpg" alt="頭像" onerror="this.style.visibility='hidden'"></div>
 
-  <button class="enter" id="enterBtn" type="button">
-    <b id="enterName">My Name</b>
-    <span>Click to Enter</span>
-  </button>
-
-  <main class="page" id="page">
-    <header class="top-bar">
-      <div class="profile-header">
-        <div class="avatar-wrap">
-          <img id="avatar" alt="avatar" src="" />
-        </div>
-        <h1 id="profileName">My Name</h1>
+    <div>
+      <!-- ⑧ 你的名稱 -->
+      <div class="name">你的名稱</div>
+      <!-- ⑨ 簽名／簡介行（可增減行數；<small> 內是灰色補充文字；<a> 可加連結）-->
+      <div class="lines">
+        <div><b>第一行標題</b><small>[補充說明]</small></div>
+        <div><b>第二行標題</b><small>[補充說明]</small></div>
+        <div>一句你想說的話，例如座右銘或目前的狀態</div>
       </div>
-
-      <button id="musicToggleBtn" class="volume-btn" type="button" aria-label="Music toggle">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M11 5L6 9H3v6h3l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.08M19.07 4.93a10 10 0 0 1 0 14.14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </header>
-
-    <section class="info-grid">
-      <article class="glass-card">
-        <h2>設備</h2>
-        <div id="devices"></div>
-      </article>
-
-      <article class="glass-card">
-        <h2>興趣</h2>
-        <div id="interests"></div>
-      </article>
-
-      <article class="glass-card">
-        <h2>最喜歡的動畫</h2>
-        <div id="favoriteAnime"></div>
-      </article>
-
-      <article class="glass-card">
-        <h2>歌手</h2>
-        <div id="favoriteArtists"></div>
-      </article>
-    </section>
-
-    <section class="music-panel" id="musicPanel">
-      <div class="music-header">
-        <div class="track-meta">
-          <div id="musicName" class="music-name">Music Name</div>
-          <div id="musicArtist" class="music-artist">Artist</div>
-        </div>
-
-        <button id="playPauseBtn" class="play-btn" type="button" aria-label="Play or pause music">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path class="play-path" d="M6 3l14 9-14 9V3z" fill="currentColor"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="music-controls">
-        <span id="currentTime" class="time-text">0:00</span>
-        <input id="progressBar" type="range" min="0" max="100" step="0.1" value="0" aria-label="Song progress" />
-        <span id="durationTime" class="time-text">0:00</span>
-      </div>
-    </section>
-
-    <div class="social-badges">
-      <a id="discordLink" class="social-badge" href="#" target="_blank" rel="noopener noreferrer" aria-label="Discord">
-        <img src="assets/icons/discord.png" alt="Discord" />
-      </a>
-      <a id="instagramLink" class="social-badge" href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-        <img src="assets/icons/instagram.png" alt="Instagram" />
-      </a>
-      <a id="spotifyLink" class="social-badge" href="#" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
-        <img src="assets/icons/spotify.png" alt="Spotify" />
-      </a>
     </div>
-  </main>
 
-  <button class="fab" id="fab" type="button" aria-label="Open settings" aria-expanded="false">
-    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="1" fill="currentColor"/>
-      <circle cx="12" cy="5" r="1" fill="currentColor"/>
-      <circle cx="12" cy="19" r="1" fill="currentColor"/>
-      <circle cx="19" cy="12" r="1" fill="currentColor"/>
-      <circle cx="5" cy="12" r="1" fill="currentColor"/>
-      <circle cx="16.5" cy="7.5" r="1" fill="currentColor"/>
-      <circle cx="7.5" cy="16.5" r="1" fill="currentColor"/>
-      <circle cx="7.5" cy="7.5" r="1" fill="currentColor"/>
-      <circle cx="16.5" cy="16.5" r="1" fill="currentColor"/>
-    </svg>
-  </button>
-
-  <div class="scrim" id="scrim"></div>
-
-  <aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" inert>
-    <header class="panel-header">
-      <h2 id="settingsTitle">Settings</h2>
-      <button id="closePanelBtn" class="panel-close" type="button" aria-label="Close settings">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </header>
-
-    <div class="setting-group">
-      <label class="toggle-row">
-        <span>Snow</span>
-        <input id="effectSnow" type="checkbox" checked />
-      </label>
-
-      <label class="toggle-row">
-        <span>Rain</span>
-        <input id="effectRain" type="checkbox" />
-      </label>
-
-      <label class="toggle-row">
-        <span>CRT / Old TV</span>
-        <input id="effectCrt" type="checkbox" />
-      </label>
+    <!-- 右上角：GMT+8 即時時鐘（程式自動更新，不用改）-->
+    <div class="right">
+      <div class="level-row">GMT+8 <span class="clock-pill" id="clock">--:--:--</span></div>
+      <div class="level-box">
+        <div class="ico">UTC+8</div>
+        <div><b id="clock-date">----/--/--</b><span>你所在地：台灣</span></div>  <!-- 這行文字可自行修改 -->
+      </div>
+      <a class="btn" href="#">聯絡我</a>   <!-- ⑩ 按鈕文字與連結，可改成 Email 或社群 -->
     </div>
-  </aside>
+  </header>
 
-  <audio id="bgMusic" preload="auto" loop></audio>
+  <section class="main">
 
-  <script src="script.js"></script>
+    <!-- ================= 左欄 ================= -->
+    <div class="left">
+      <!-- 展示圖：assets/showcase.jpg（可改成你想放的任何圖片，建議正方形）-->
+      <div class="glass showcase" data-depth="9" data-tilt="3">
+        <div class="frame"><img src="assets/showcase.jpg" alt="展示圖片" onerror="this.style.display='none'"></div>
+      </div>
+
+      <!-- 音樂播放器：Steam「最愛的指南」樣式 -->
+      <div class="glass guide" data-depth="13" data-tilt="4">
+        <h2>最愛的音樂</h2>
+        <div class="guide-card" id="player">
+          <div class="case"><div class="cd"><img id="cover" src="" alt="" hidden></div></div>
+          <div>
+            <div class="song-title" id="song-title">歌曲名稱</div>
+            <div class="song-artist">演出者：<b id="song-artist">演出者名稱</b></div>
+            <div class="stars">★★★★★<span>我的推薦</span></div>   <!-- 不想要星星可整行刪除 -->
+            <div class="progress-row">
+              <span id="cur">0:00</span>
+              <div class="progress" id="progress"><div class="bar" id="bar"></div></div>
+              <span id="dur">0:00</span>
+            </div>
+            <div class="controls">
+              <button id="prev" aria-label="上一首">⏮</button>
+              <button id="play" aria-label="播放或暫停">▶</button>
+              <button id="next" aria-label="下一首">⏭</button>
+            </div>
+          </div>
+          <audio id="audio" preload="metadata"></audio>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 右欄：由你填寫 =================
+         每個 <div class="sec"> 是一個區塊，可複製新增或刪除。
+         標題旁的灰色數字 <span> 可自由填寫，或整個刪掉 -->
+    <aside class="glass side" data-depth="17" data-tilt="5">
+      <div class="online">目前在線</div>
+
+      <div class="sec">
+        <h3>關於我</h3>
+        <p>在這裡寫你的自我介紹：你是誰、做什麼、喜歡什麼。</p>
+      </div>
+
+      <div class="sec">
+        <h3>興趣<span>3</span></h3>
+        <ul>
+          <li>興趣一</li>
+          <li>興趣二</li>
+          <li>興趣三</li>
+        </ul>
+      </div>
+
+      <!-- 徽章列：可放小圖示，例如 <img src="assets/badge1.png">；沒有圖就保持 <i></i> 方塊 -->
+      <div class="sec">
+        <h3>徽章<span>4</span></h3>
+        <div class="badges"><i></i><i></i><i></i><i></i></div>
+      </div>
+
+      <!-- 連結列（Steam 好友欄樣式）：
+           href 換成你的網址；.pic 可換成 <img class="pic" src="assets/ig.png">；右邊圓圈數字可自由填寫或刪除 -->
+      <div class="sec" style="margin-bottom:0">
+        <h3>連結<span>2</span></h3>
+        <a class="friend" href="#"><i class="pic"></i><div class="t"><b>Instagram</b><small>@你的帳號</small></div><div class="lv">1</div></a>
+        <a class="friend" href="#"><i class="pic"></i><div class="t"><b>GitHub</b><small>@你的帳號</small></div><div class="lv">2</div></a>
+      </div>
+    </aside>
+  </section>
+</div>
+
+<script>
+/* ============ ⑪ 音樂清單 ============
+   mp3 放在 assets/music/ 底下（或自行改路徑）。
+   GitHub 的檔名區分大小寫，路徑必須和檔案名稱完全一樣（含副檔名大小寫）。
+   cover 是 CD 中間的封面圖，沒有就留 ""。要多首歌就複製一行。 */
+const playlist = [
+  { title: "歌曲名稱一", artist: "演出者", src: "assets/music/song1.mp3", cover: "assets/music/cover1.jpg" },
+  // { title: "歌曲名稱二", artist: "演出者", src: "assets/music/song2.mp3", cover: "" },
+];
+
+/* ============ GMT+8 時鐘（含秒數）============ */
+const pad = n => String(n).padStart(2, "0");
+function tickClock() {
+  const t = new Date(Date.now() + 8 * 3600 * 1000);   // 換算成 UTC+8，不受訪客電腦時區影響
+  document.getElementById("clock").textContent = pad(t.getUTCHours()) + ":" + pad(t.getUTCMinutes()) + ":" + pad(t.getUTCSeconds());
+  document.getElementById("clock-date").textContent = t.getUTCFullYear() + "/" + pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCDate());
+}
+tickClock(); setInterval(tickClock, 1000);
+
+/* ============ ⑫ 毛玻璃跟著鼠標移動（guns.lol 效果）============
+   data-depth：整體跟著鼠標位移的幅度（數字越大動越多，不同數字造成層次感）
+   data-tilt ：鼠標停在卡片上時的 3D 傾斜角度
+   想關閉：把 ENABLE 改成 false */
+const ENABLE = true;
+const cards = [...document.querySelectorAll(".glass")];
+const canHover = matchMedia("(hover: hover)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+let nx = 0, ny = 0;
+function render(el) {
+  const d = +el.dataset.depth || 0, s = el._s || { rx: 0, ry: 0 };
+  el.style.transform = `perspective(900px) translate3d(${-nx * d}px, ${-ny * d}px, 0) rotateX(${s.rx}deg) rotateY(${s.ry}deg)`;
+}
+if (ENABLE && canHover) {
+  addEventListener("mousemove", e => {
+    nx = e.clientX / innerWidth - .5; ny = e.clientY / innerHeight - .5;
+    cards.forEach(render);
+  });
+  cards.forEach(el => {
+    el.addEventListener("mousemove", e => {
+      const r = el.getBoundingClientRect(), t = +el.dataset.tilt || 4;
+      el._s = { rx: -((e.clientY - r.top) / r.height - .5) * t, ry: ((e.clientX - r.left) / r.width - .5) * t };
+      el.classList.remove("leaving");
+    });
+    el.addEventListener("mouseleave", () => { el._s = { rx: 0, ry: 0 }; el.classList.add("leaving"); render(el); });
+  });
+}
+
+/* ============ 播放器邏輯（通常不用改）============ */
+const audio = document.getElementById("audio"), player = document.getElementById("player"),
+      playBtn = document.getElementById("play"), cover = document.getElementById("cover");
+let index = 0;
+const fmt = s => isFinite(s) ? Math.floor(s / 60) + ":" + pad(Math.floor(s % 60)) : "0:00";
+function load(i) {
+  const s = playlist[i]; if (!s) return;
+  audio.src = s.src;
+  document.getElementById("song-title").textContent = s.title;
+  document.getElementById("song-artist").textContent = s.artist;
+  if (s.cover) { cover.src = s.cover; cover.hidden = false; cover.onerror = () => cover.hidden = true; } else cover.hidden = true;
+}
+function step(d) { index = (index + d + playlist.length) % playlist.length; load(index); audio.play().catch(() => {}); }
+playBtn.onclick = () => audio.paused ? audio.play().catch(() => {}) : audio.pause();
+document.getElementById("next").onclick = () => step(1);
+document.getElementById("prev").onclick = () => step(-1);
+audio.onplay = () => { player.classList.add("playing"); playBtn.textContent = "⏸"; };
+audio.onpause = () => { player.classList.remove("playing"); playBtn.textContent = "▶"; };
+audio.onended = () => step(1);
+audio.onloadedmetadata = () => document.getElementById("dur").textContent = fmt(audio.duration);
+audio.ontimeupdate = () => {
+  document.getElementById("cur").textContent = fmt(audio.currentTime);
+  document.getElementById("bar").style.width = (audio.currentTime / audio.duration * 100 || 0) + "%";
+};
+document.getElementById("progress").onclick = e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  audio.currentTime = (e.clientX - r.left) / r.width * audio.duration;
+};
+load(0);
+</script>
 </body>
 </html>
